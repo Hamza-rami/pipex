@@ -1,0 +1,5 @@
+hi i am rami
+This will be output to the file named dup.txt
+This will also be output to the file named dup.txt
+3
+1
