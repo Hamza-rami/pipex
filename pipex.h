@@ -13,5 +13,7 @@
 char	**ft_split(char const *s, char c);
 int     ft_strstr(char *haystack, char *needle);
 char	*ft_strjoin(char *s1, char *s2);
+char    *get_envp(char *envp[]);
+char *find_command(char **split_paths, char *cmd);
 
 #endif

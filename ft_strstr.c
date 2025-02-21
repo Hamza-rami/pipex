@@ -36,6 +36,15 @@ static char	*ft_strcpy(char *dest, char const *src)
 	return (dest);
 }
 
+int	ft_strlen(char *str)
+{
+	int	i;
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
+}
+
 char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*arr;
