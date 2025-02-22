@@ -1,27 +1,5 @@
 #include "pipex.h"
 
-int ft_strstr(char *haystack, char *needle)
-{
-	size_t	i;
-	size_t	j;
-
-	i = 0;
-	j = 0;
-	while (haystack[i])
-	{
-		if (haystack[i] == needle[j])
-		{
-			while (haystack[i + j] && haystack[i + j] == needle[j])
-				j++;
-			if (needle[j] == '\0')
-				return (1);
-			j = 0;
-		}
-		i++;
-	}
-	return (0);
-}
-
 static char	*ft_strcpy(char *dest, char const *src)
 {
 	int	i;
