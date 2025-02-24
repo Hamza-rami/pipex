@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strjoin.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/22 11:04:07 by hrami             #+#    #+#             */
+/*   Updated: 2025/02/22 11:04:08 by hrami            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 static char	*ft_strcpy(char *dest, char const *src)
@@ -17,6 +29,7 @@ static char	*ft_strcpy(char *dest, char const *src)
 int	ft_strlen(char *str)
 {
 	int	i;
+
 	i = 0;
 	while (str[i])
 		i++;
@@ -45,4 +58,30 @@ char	*ft_strjoin(char *s1, char *s2)
 	}
 	arr[i + j] = '\0';
 	return (arr);
+}
+
+char	*ft_strdup(char *src)
+{
+	int		i;
+	int		size;
+	char	*str;
+
+	size = 0;
+	i = 0;
+	while (src[size])
+	{
+		size++;
+	}
+	str = malloc(size + 1);
+	if (str == NULL)
+	{
+		return (NULL);
+	}
+	while (src[i])
+	{
+		str[i] = src[i];
+		i++;
+	}
+	str[i] = '\0';
+	return (str);
 }

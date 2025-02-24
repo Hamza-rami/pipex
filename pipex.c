@@ -1,10 +1,40 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/22 12:58:10 by hrami             #+#    #+#             */
+/*   Updated: 2025/02/22 13:34:06 by hrami            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
-void help_main(int ac, char **av)
+void	help_main(int ac, char **av, char *envp[], t_pipex *pipex)
 {
 	if (ac != 5)
 	{
 		perror("Error \n enter the exact number of arguments");
+		exit(1);
+	}
+	if (!envp || !envp[0])
+	{
+		perror("Error \n no environment variables found");
+		exit(1);
+	}
+	pipex->cmd1 = ft_split(av[2], ' ');
+	if (!pipex->cmd1)
+	{
+		perror("Error\n splite return NULL");
+		exit(1);
+	}
+	pipex->cmd2 = ft_split(av[3], ' ');
+	if (!pipex->cmd2)
+	{
+		free_split(pipex->cmd1);
+		perror("Error\n splite return NULL");
 		exit(1);
 	}
 }
@@ -22,76 +52,56 @@ void	free_split(char **str)
 	free(str);
 }
 
-
-void open_file(int *i, int *j, int *f, char *av[])
+void	help_close(t_pipex *pipex)
 {
-	*i = open(av[1], O_RDONLY);
-	*j = open(av[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (*i < 0 || *j < 0)
-	{
-		perror("error opening file");
-		exit(1);
-	}
-	*f = fork();
+	close(pipex->pip[0]);
+	close(pipex->pip[1]);
+	close(pipex->f1);
+	close(pipex->f2);
+	waitpid(pipex->pid1, NULL, 0);
+	waitpid(pipex->pid2, NULL, 0);
 }
 
-void help_close(int i, int j, int f, int f2, int *pip)
+void	execute_command(t_pipex *pipex, int is_first, char *envp[])
 {
-	close(pip[0]);
-	close(pip[1]);
-	close(i);
-	close(j);
-	waitpid(f, NULL, 0);
-	waitpid(f2, NULL, 0);
+	if (is_first)
+	{
+		dup2(pipex->f1, 0);
+		dup2(pipex->pip[1], 1);
+	}
+	else
+	{
+		dup2(pipex->pip[0], 0);
+		dup2(pipex->f2, 1);
+	}
+	close(pipex->pip[0]);
+	close(pipex->pip[1]);
+	close(pipex->f1);
+	close(pipex->f2);
+	if (is_first)
+		execve(pipex->cmd1_path, pipex->cmd1, envp);
+	else
+		execve(pipex->cmd2_path, pipex->cmd2, envp);
+	perror("execve failed");
+	exit(1);
 }
 
-int main(int ac, char *av[], char *envp[])
+int	main(int ac, char *av[], char *envp[])
 {
-	char	**cmd1;
-	char	**cmd2;
-	int		pip[2];
-	int		f;
-	int		f2;
-	int		j, i;
-	char	*cmd1_path;
-	char	*cmd2_path;
+	t_pipex	pipex;
 
-	help_main(ac, av);
-	cmd1 = ft_split(av[2], ' ');
-	cmd2 = ft_split(av[3], ' ');
-	check_command(&cmd1_path, &cmd2_path, cmd1[0], cmd2[0], envp);
-	open_file(&i, &j, &f, av);
-	if (pipe(pip) < 0)
-	{
-		perror("pipe error");
-		exit(1);
-	}
-	if (f == 0)
-	{
-		dup2(i, 0);
-		dup2(pip[1], 1);
-		close(pip[1]);
-		close(pip[0]);
-		close(j);
-		execve(cmd1_path, cmd1, envp);
-		perror("execve failed");
-		exit(1);
-	}
-	f2 = fork();
-	if (f2 == 0)
-	{
-		dup2(j, 1);
-		dup2(pip[0], 0);
-		close(pip[1]);
-		close(pip[0]);
-		close(i);
-		execve(cmd2_path, cmd2, envp);
-		perror("execve failed");
-		exit(1);
-	}
-	help_close(i, j, f, f2, pip);
-	free_split(cmd1);
-	free_split(cmd2);
-	free(cmd1_path);
-	free(cmd2_path);
+	help_main(ac, av, envp, &pipex);
+	check_command(&pipex, envp);
+	open_file(&pipex, av);
+	pipex.pid1 = fork();
+	if (pipex.pid1 == 0)
+		execute_command(&pipex, 1, envp);
+	pipex.pid2 = fork();
+	if (pipex.pid2 == 0)
+		execute_command(&pipex, 0, envp);
+	help_close(&pipex);
+	free_split(pipex.cmd1);
+	free_split(pipex.cmd2);
+	free(pipex.cmd1_path);
+	free(pipex.cmd2_path);
 }
