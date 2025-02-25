@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:04:07 by hrami             #+#    #+#             */
-/*   Updated: 2025/02/22 11:04:08 by hrami            ###   ########.fr       */
+/*   Updated: 2025/02/24 19:11:34 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,4 +84,24 @@ char	*ft_strdup(char *src)
 	}
 	str[i] = '\0';
 	return (str);
+}
+
+void	open_file(t_pipex *pipex, char *av[])
+{
+	pipex->f1 = open(av[1], O_RDONLY);
+	pipex->f2 = open(av[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (pipex->f1 < 0 || pipex->f2 < 0)
+	{
+		free_split(pipex->cmd1);
+		free_split(pipex->cmd2);
+		perror("Error opening file");
+		exit(1);
+	}
+	if (pipe(pipex->pip) < 0)
+	{
+		free_split(pipex->cmd1);
+		free_split(pipex->cmd2);
+		perror("pipe error");
+		exit(1);
+	}
 }
