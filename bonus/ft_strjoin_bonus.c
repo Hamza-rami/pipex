@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:04:07 by hrami             #+#    #+#             */
-/*   Updated: 2025/02/24 19:13:16 by hrami            ###   ########.fr       */
+/*   Updated: 2025/02/28 18:16:38 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,4 +84,17 @@ char	*ft_strdup(char *src)
 	}
 	str[i] = '\0';
 	return (str);
+}
+
+void	free_split(char **str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		free(str[i]);
+		i++;
+	}
+	free(str);
 }

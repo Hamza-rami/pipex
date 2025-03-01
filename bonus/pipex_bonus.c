@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 12:58:10 by hrami             #+#    #+#             */
-/*   Updated: 2025/02/27 13:52:07 by hrami            ###   ########.fr       */
+/*   Updated: 2025/02/28 20:42:11 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,10 +96,9 @@ void open_file(t_pipex *pipex, char *av[], int ac)
     }
 }
 
-void execute_command(char *cmd, char **envp)
+void execute_command(char *cmd_path, char **cmd_args, char **envp)
 {
-    char *args[] = {cmd, NULL};
-    execve(cmd, args, envp);
+    execve(cmd_path, cmd_args, envp);
     perror("execve failed");
     exit(1);
 }
@@ -110,18 +109,34 @@ int main(int ac, char *av[], char *envp[])
     int i;
     int pid;
     int j;
+    char    *cmd_paths;
     
     help_main(ac, av, envp);
     initialize_pipes(&pipex, ac);
     help_pip(&pipex);
     open_file(&pipex, av, ac);
-
+    get_paths(&pipex, envp);
     i = 0;
+    cmd_paths = NULL;
+    pipex.cmd1 = NULL;
     while (i < pipex.count)
     {
         pid = fork();
         if (pid == 0)
         {
+            if (pipex.cmd1)
+                free_split(pipex.cmd1);
+            pipex.cmd1 = ft_split(av[i + 2], ' ');
+            if (cmd_paths)
+                free(cmd_paths);
+            cmd_paths = check_command(&pipex, envp);
+            if (!cmd_paths)
+            {
+                free_split(pipex.cmd1);
+                free_split(pipex.paths);
+                free(cmd_paths);
+                exit(127);
+            }
             if (i == 0)
                 dup2(pipex.f1, 0);
             else
@@ -130,7 +145,6 @@ int main(int ac, char *av[], char *envp[])
                 dup2(pipex.f2, 1);
             else
                 dup2(pipex.pipes[i][1], 1);
-
             close(pipex.f1);
             close(pipex.f2);
             j = 0;
@@ -140,7 +154,7 @@ int main(int ac, char *av[], char *envp[])
                 close(pipex.pipes[j][1]);
                 j++;
             }
-            execute_command(av[i + 2], envp);
+            execute_command(cmd_paths, pipex.cmd1, envp);    
         }
         i++;
     }
@@ -154,11 +168,10 @@ int main(int ac, char *av[], char *envp[])
         i++;
     }
     while (waitpid(-1, NULL, 0) > 0);
+    if (pipex.cmd1)
+        free_split(pipex.cmd1);
+    if (cmd_paths)
+        free(cmd_paths);
     free_pipe(pipex.pipes, pipex.count - 1);
     return 0;
 }
-
-
-
-
-
