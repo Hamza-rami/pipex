@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 12:58:10 by hrami             #+#    #+#             */
-/*   Updated: 2025/02/28 20:42:11 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/01 18:38:18 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,11 @@ void help_main(int ac, char *av[], char **envp)
     {
         perror("Error: No environment variables");
         exit(1);
+    }
+    if (ac - 3 > 30900)
+    {
+    perror("Error: Too many commands");
+    exit(1);
     }
 }
 
@@ -103,6 +108,25 @@ void execute_command(char *cmd_path, char **cmd_args, char **envp)
     exit(1);
 }
 
+void    handle_here_doc(t_pipex *pipex, char *end)
+{
+    char *line;
+    
+    if(pipe(pipex->hd_pipe) < 0)
+    {
+        perror("error in pipe");
+        exit(1);
+    }
+    while (1)
+    {
+        line = get_next_line(0);
+        if (!line || ft_strcmp(line, end) == 0);
+            break;
+        write(pipex->hd_pipe[1], line, ft_strlen(line));
+    }
+    
+}
+
 int main(int ac, char *av[], char *envp[])
 {
     t_pipex pipex;
@@ -111,6 +135,8 @@ int main(int ac, char *av[], char *envp[])
     int j;
     char    *cmd_paths;
     
+    if (ft_strncmp(av[1], "here_doc", 8) == 0)
+        pipex.here_doc = 1;
     help_main(ac, av, envp);
     initialize_pipes(&pipex, ac);
     help_pip(&pipex);
@@ -173,5 +199,6 @@ int main(int ac, char *av[], char *envp[])
     if (cmd_paths)
         free(cmd_paths);
     free_pipe(pipex.pipes, pipex.count - 1);
+    free_split(pipex.paths);
     return 0;
 }

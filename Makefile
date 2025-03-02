@@ -4,7 +4,7 @@ SRC = mandatory/ft_splite.c mandatory/ft_strjoin.c mandatory/get_envvp.c mandato
 
 INC = pipex.h
 OBJS = ${SRC:.c=.o}
-CC = cc -Wall -Wextra -Werror -fsanitize=address -g3
+CC = cc -Wall -Wextra -Werror 
 RM = rm -rf
 
 %.o: %.c ${INC}

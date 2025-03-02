@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:04:07 by hrami             #+#    #+#             */
-/*   Updated: 2025/02/28 18:16:38 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/01 18:31:00 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,15 +86,12 @@ char	*ft_strdup(char *src)
 	return (str);
 }
 
-void	free_split(char **str)
+int	ft_strncmp(char *s1, char *s2)
 {
 	int	i;
 
 	i = 0;
-	while (str[i])
-	{
-		free(str[i]);
+	while (s1[i] && s2[i] && s1[i] == s2[i])
 		i++;
-	}
-	free(str);
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
