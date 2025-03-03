@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:10:35 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/01 18:31:37 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/02 17:36:36 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,10 @@
 # include <unistd.h>
 # include <sys/types.h>
 # include <sys/wait.h>
-# include <stdio.h>
 # include <stdlib.h>
 # include <fcntl.h>
+# include "get_next_line.h"
+# include <stdio.h>
 
 typedef struct s_pipex
 {
@@ -40,6 +41,6 @@ char	*check_command(t_pipex *pipex, char **envp);
 void	get_paths(t_pipex *pipex, char **envp);
 void	free_split(char **str);
 char	*ft_strdup(char *src);
-int		ft_strcmp(char *s1, char *s2);
+int		ft_strncmp(char *s1, char *s2, unsigned int n);
 
 #endif
