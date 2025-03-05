@@ -6,229 +6,189 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 12:58:10 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/03 17:38:40 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/04 14:26:51 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
 
-void free_pipe(int **tab, int size)
+void free_pipe(t_pipex *pipex)
 {
-    int i = 0;
-    if (!tab)
-        return;
-    while (i < size)
-    {
-        if (tab[i])
-            free(tab[i]);
-        i++;
-    }
-    free(tab);
+	int i = 0;
+
+	if (!pipex->pipes)
+		return;
+	while (i < pipex->count - 1)
+	{
+		if (pipex->pipes[i])
+			free(pipex->pipes[i]);
+		i++;
+	}
+	free(pipex->pipes);
 }
 
-void help_main(int ac, char *av[], char **envp)
+
+void create_pipes(t_pipex *pipex)
 {
-	if (ac < 5)
+	int	i;
+
+	i = 0;
+	while (i < pipex->count - 1)
 	{
-		perror("Error: Not enough arguments");
+		pipex->pipes[i] = malloc(2 * sizeof(int));
+		if (!pipex->pipes[i])
+		{
+			perror("Pipe malloc failed");
+			free_pipe(pipex);
+			exit(1);	
+		}
+		if (pipe(pipex->pipes[i]) == -1)
+		{
+			perror("Pipe creation failed");
+			while (i-- >= 0)
+			{
+				close(pipex->pipes[i][0]);
+				close(pipex->pipes[i][1]);
+			}
+			free_pipe(pipex);
+			exit(1);
+		}
+		i++;
+	}
+}
+
+void open_files(t_pipex *pipex, char *infile, char *outfile)
+{
+	pipex->f1 = open(infile, O_RDONLY);
+	if (pipex->f1 < 0)
+	{
+		perror("Error opening input file");
 		exit(1);
 	}
-	if (!envp || !envp[0])
+	pipex->f2 = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (pipex->f2 < 0)
 	{
-		perror("Error: No environment variables");
+		perror("Error opening output file");
 		exit(1);
 	}
-	if (ac - 3 > 30900)
-	{
-	perror("Error: Too many commands");
-	exit(1);
-	}
 }
 
-void help_pip(t_pipex *pipex)
+void execute_command(char *cmd_path, char **cmd, char **envp)
 {
-    int i = 0;
-    while (i < pipex->count - 1) 
-    {
-        if (pipe(pipex->pipes[i]) < 0) 
-        {
-            perror("Error creating pipe");
-            while (i > 0)
-            {
-                close(pipex->pipes[i - 1][0]);
-                close(pipex->pipes[i - 1][1]);
-                i--;
-            }
-            free_pipe(pipex->pipes, pipex->count - 1);
-            exit(1);
-        }
-        i++;
-    }   
-}
-
-void initialize_pipes(t_pipex *pipex, int ac)
-{
-    int i = 0;
-    pipex->count = ac - 3;
-    pipex->pipes = malloc(sizeof(int *) * (pipex->count - 1));
-    if (!pipex->pipes)
-    {
-        perror("Error allocating memory for pipes");
-        exit(1);
-    }
-    while (i < pipex->count - 1)
-    {
-        pipex->pipes[i] = malloc(sizeof(int) * 2);
-        if (!pipex->pipes[i])
-        {
-            perror("Error allocating memory for a pipe");
-            while (i > 0)
-                free(pipex->pipes[--i]);
-            free(pipex->pipes);
-            exit(1);
-        }
-        i++;
-    }
-}
-
-void open_file(t_pipex *pipex, char *av[], int ac)
-{
-	if (pipex->here_doc == 1)
-	{
-    	pipex->f2 = open(av[ac - 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
-		if (pipex->f2 < 0)
-		{
-			perror("Error opening output file");
-			exit(1);
-		}
-	}
-	else
-	{
-		pipex->f1 = open(av[1], O_RDONLY);
-		if (pipex->f1 < 0)
-		{
-			perror("Error opening input file");
-			exit(1);
-		}
-    	pipex->f2 = open(av[ac - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (pipex->f2 < 0)
-		{
-			perror("Error opening output file");
-			exit(1);
-		}
-	}
-}
-
-void execute_command(char *cmd_path, char **cmd_args, char **envp)
-{
-	fflush(stdout);
-	execve(cmd_path, cmd_args, envp);
+	execve(cmd_path, cmd, envp);
 	perror("execve failed");
 	exit(1);
 }
 
-void    handle_here_doc(t_pipex *pipex, char *end)
+void child_process(t_pipex pipex, int i, char *cmd_path, char **envp)
 {
-	char    *line;
-
-	if (pipe(pipex->hd_pipe) == -1)
+	int j = 0;
+	if (i == 0)
 	{
-		perror("Pipe error");
-		exit(1);
+		dup2(pipex.f1, 0);
+		dup2(pipex.pipes[i][1], 1);
 	}
-	while (1)
+	else if (i == pipex.count - 1)
 	{
-		write(1, "heredoc> ", 9);
-		line = get_next_line(0);
-		if (!line || ft_strncmp(line, end, ft_strlen(end)) == 0)
-			break;
-		write(pipex->hd_pipe[1], line, ft_strlen(line));
-		free(line);
-	}
-	close(pipex->hd_pipe[1]);
-	dup2(pipex->hd_pipe[0], 0);
-	close(pipex->hd_pipe[0]);
-}
-
-int main(int ac, char *av[], char *envp[])
-{
-	t_pipex pipex;
-	int i;
-	int pid;
-	int j;
-	int	k;
-	char    *cmd_paths;
-	char	*new_path;
-
-	if (ft_strncmp(av[1], "her_doc", 8) == 0)
-	{
-		pipex.here_doc = 1;
-		handle_here_doc(&pipex, av[2]);
+		dup2(pipex.pipes[i - 1][0], 0);
+		dup2(pipex.f2, 1);
 	}
 	else
-		pipex.here_doc = 0;
-	help_main(ac, av, envp);
-	initialize_pipes(&pipex, ac);
-	help_pip(&pipex);
-	open_file(&pipex, av, ac);
-	get_paths(&pipex, envp);
-	i = 0;
-	cmd_paths = NULL;
-	pipex.cmd1 = NULL;
-	while (i < pipex.count - 1)
 	{
-		pid = fork();
-		if (pid < 0)
-		{
-			perror("Fork failed");
-			exit(1);
-		}
-		if (pid == 0)
-		{
-		    pipex.cmd1 = ft_split(av[i + 2], ' ');
-		    cmd_paths = check_command(&pipex, envp);
-		    if (i == 0)
-		    {
-		        if (pipex.here_doc)
-		            dup2(pipex.hd_pipe[0], 0);
-		        else
-		            dup2(pipex.f1, 0);
-		    }
-		    else
-		        dup2(pipex.pipes[i - 1][0], 0);
-		    if (i == pipex.count - 1)
-		        dup2(pipex.f2, 1);
-		    else
-		        dup2(pipex.pipes[i][1], 1);
-			printf("%s\n", cmd_paths);
-		    close(pipex.f1);
-		    close(pipex.f2);
-		    int j = 0;
-		    while (j < pipex.count - 1)
-		    {
-		        close(pipex.pipes[j][0]);
-		        close(pipex.pipes[j][1]);
-		        j++;
-		    }
-		    execute_command(cmd_paths, pipex.cmd1, envp);
-		}
-		close(pipex.f1);
-		close(pipex.f2);
-	i++;
+		dup2(pipex.pipes[i - 1][0], 0);
+		dup2(pipex.pipes[i][1], 1);
 	}
-	j = 0;
 	while (j < pipex.count - 1)
 	{
-	    close(pipex.pipes[j][0]);
-	    close(pipex.pipes[j][1]);
-	    j++;
+		close(pipex.pipes[j][0]);
+		close(pipex.pipes[j][1]);
+		j++;
 	}
-	while (waitpid(-1, NULL, 0) > 0);
+	execute_command(cmd_path, pipex.cmd1, envp);
+}
+
+void	help(int ac, t_pipex *pipex)
+{
+	if (ac < 5)
+	{
+		perror("Usage: ./pipex infile cmd1 cmd2 ... cmdn outfile\n");
+		exit(1);
+	}
+	pipex->count = ac - 3;
+	pipex->pipes = malloc((pipex->count - 1) * sizeof(int *));
+	if (!pipex->pipes)
+	{
+		perror("Pipe allocation failed");
+		exit(1);
+	}
+}
+
+int main(int ac, char **av, char **envp)
+{
+	t_pipex	pipex;
+	char	*cmd_paths;
+	int		i;
+	
+	i = 0;
+	if (!ft_strncmp(av[1], "here_doc", 8))
+	{
+	    if (ac < 6)
+	    {
+	        perror("Usage: ./pipex here_doc LIMITER cmd1 cmd2 ... outfile\n");
+	        return (1);
+	    }
+	    pipex.here_doc = 1;
+	    handle_here_doc(av[2], &pipex);
+	    pipex.count = ac - 4;
+	    open_files_here_doc(&pipex, av[ac - 1]);
+	}
+	else
+	{
+	    pipex.here_doc = 0;
+	    open_files(&pipex, av[1], av[ac - 1]);
+		help(ac, &pipex);
+	}
+	create_pipes(&pipex);
+	get_paths(&pipex, envp);
+	pipex.cmd1 = NULL;
+	cmd_paths = NULL;
+	while (i < pipex.count)
+	{
+		if (fork() == 0)
+		{
+			if (pipex.cmd1)
+				free_split(pipex.cmd1);
+			if (pipex.here_doc == 1)
+				pipex.cmd1 = ft_split(av[i + 3], ' ');
+			else
+				pipex.cmd1 = ft_split(av[i + 2], ' ');
+			if (cmd_paths)
+				free(cmd_paths);
+			cmd_paths = check_command(&pipex, envp);
+			child_process(pipex, i, cmd_paths, envp);
+		}
+		i++;
+	}
+	i = 0;
+	while (i < pipex.count - 1)
+	{
+		close(pipex.pipes[i][0]);
+		close(pipex.pipes[i][1]);
+		i++;
+	}
+	i = 0;
+	while (i < pipex.count)
+	{
+		wait(NULL);
+		i++;
+	}
+	close(pipex.f1);
+	close(pipex.f2);
 	if (pipex.cmd1)
-	    free_split(pipex.cmd1);
+		free_split(pipex.cmd1);
 	if (cmd_paths)
-	    free(cmd_paths);
-	free_pipe(pipex.pipes, pipex.count - 1);
+		free(cmd_paths);
 	free_split(pipex.paths);
-		return 0;
+	free_pipe(&pipex);
+	return (0);
 }

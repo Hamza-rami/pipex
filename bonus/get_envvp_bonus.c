@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:04:20 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/01 15:20:02 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/04 11:25:14 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,13 @@ void	get_paths(t_pipex *pipex, char **envp)
 	if (!env)
 	{
 		perror("Error: No environment variables");
+		free_pipe(pipex);
 		exit(1);
 	}
 	pipex->paths = ft_split(env, ':');
 	if (!pipex->paths)
 	{
+		free_pipe(pipex);
 		perror("Error: Failed to get paths");
 		exit(1);
 	}
@@ -74,17 +76,24 @@ char	*check_command(t_pipex *pipex, char **envp)
 	{
 		perror("Error: Command not found\n");
 		free_split(pipex->paths);
+		free_pipe(pipex);
 		exit(1);
 	}
-	if (access(pipex->cmd1[0], X_OK) == 0)
-		cmd_path = ft_strdup(pipex->cmd1[0]);
+	if (pipex->cmd1[0][0] == '.' || pipex->cmd1[0][0] == '/')
+	{
+		if (access(pipex->cmd1[0], X_OK) == 0)
+			cmd_path = ft_strdup(pipex->cmd1[0]);
+		else
+			cmd_path = NULL;
+	}
 	else
 		cmd_path = find_command(pipex->paths, pipex->cmd1[0]);
 	if (!cmd_path)
 	{
-		printf("command not found: %s\n", pipex->cmd1[0]);
+		perror("command not found");
 		free_split(pipex->cmd1);
 		free_split(pipex->paths);
+		free_pipe(pipex);
 		exit(1);
 	}
 	return (cmd_path);
@@ -102,4 +111,3 @@ void	free_split(char **str)
 	}
 	free(str);
 }
-

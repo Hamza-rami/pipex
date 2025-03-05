@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:10:35 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/03 14:49:40 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/04 14:06:20 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,5 +42,8 @@ void	get_paths(t_pipex *pipex, char **envp);
 void	free_split(char **str);
 char	*ft_strdup(char *src);
 int		ft_strncmp(char *s1, char *s2, unsigned int n);
+void	free_pipe(t_pipex *pipex);
+void	handle_here_doc(char *limiter, t_pipex *pipex);
+void	open_files_here_doc(t_pipex *pipex, char *outfile);
 
 #endif

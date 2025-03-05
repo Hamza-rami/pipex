@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:04:20 by hrami             #+#    #+#             */
-/*   Updated: 2025/02/24 21:32:26 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/04 08:48:54 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ char	*find_command(char **split_paths, char *cmd)
 
 void	help(t_pipex *pipex, char **paths)
 {
-	printf("command not found: %s\n", pipex->cmd2[0]);
+	perror("command not found");
 	free(pipex->cmd1_path);
 	free_split(paths);
 	free_split(pipex->cmd1);
@@ -70,13 +70,18 @@ void	help_check_command(t_pipex *pipex, char **paths)
 		free_split(paths);
 		exit(1);
 	}
-	if (access(pipex->cmd1[0], X_OK) == 0)
-		pipex->cmd1_path = ft_strdup(pipex->cmd1[0]);
+	if (pipex->cmd1[0][0] == '.' || pipex->cmd1[0][0] == '/')
+	{
+		if (access(pipex->cmd1[0], X_OK) == 0)
+			pipex->cmd1_path = ft_strdup(pipex->cmd1[0]);
+		else
+			pipex->cmd1_path = NULL;
+	}
 	else
 		pipex->cmd1_path = find_command(paths, pipex->cmd1[0]);
 	if (!pipex->cmd1_path)
 	{
-		printf("command not found: %s\n", pipex->cmd1[0]);
+		perror("command not found");
 		free_split(pipex->cmd1);
 		free_split(pipex->cmd2);
 		free_split(paths);
@@ -103,8 +108,13 @@ void	check_command(t_pipex *pipex, char **envp)
 		free_split(paths);
 		exit(1);
 	}
-	if (access(pipex->cmd2[0], X_OK) == 0)
-		pipex->cmd2_path = ft_strdup(pipex->cmd2[0]);
+	if (pipex->cmd2[0][0] == '.' || pipex->cmd2[0][0] == '/')
+	{
+		if (access(pipex->cmd2[0], X_OK) == 0)
+			pipex->cmd2_path = ft_strdup(pipex->cmd2[0]);
+		else
+			pipex->cmd2_path = NULL;
+	}
 	else
 		pipex->cmd2_path = find_command(paths, pipex->cmd2[0]);
 	if (!pipex->cmd2_path)
