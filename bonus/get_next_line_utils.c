@@ -6,10 +6,9 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/02 13:42:18 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/02 14:24:29 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/05 17:38:45 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "get_next_line.h"
 
@@ -52,7 +51,6 @@ char	*ft_substr(char *s, unsigned int start, size_t len)
 	sub[len] = '\0';
 	return (sub);
 }
-
 
 char	*ft_strchr(const char *s, int c)
 {

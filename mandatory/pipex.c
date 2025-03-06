@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 12:58:10 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/04 08:36:42 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/05 17:03:39 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,14 +85,11 @@ void	execute_command(t_pipex *pipex, int is_first, char *envp[])
 	perror("execve failed");
 	exit(1);
 }
-// void ff()
-// {
-// 	system("lsof -c pipex");
-// }
+
 int	main(int ac, char *av[], char *envp[])
 {
 	t_pipex	pipex;
-	// atexit(ff);
+
 	help_main(ac, av, envp, &pipex);
 	check_command(&pipex, envp);
 	open_file(&pipex, av);

@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:10:35 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/04 14:06:20 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/05 18:12:35 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ typedef struct s_pipex
 	char	**paths;
 	char	**cmd1;
 	int		here_doc;
-	int		hd_pipe[2];
+	char	*cmd_paths;
 }	t_pipex;
 
 char	**ft_split(char const *s, char c);
@@ -45,5 +45,10 @@ int		ft_strncmp(char *s1, char *s2, unsigned int n);
 void	free_pipe(t_pipex *pipex);
 void	handle_here_doc(char *limiter, t_pipex *pipex);
 void	open_files_here_doc(t_pipex *pipex, char *outfile);
+void	free_pipe(t_pipex *pipex);
+void	create_pipes(t_pipex *pipex);
+void	child_process(t_pipex *pipex, int i, char *cmd_path, char **envp);
+void	open_files(t_pipex *pipex, char *infile, char *outfile);
+void	execute_command(char *cmd_path, char **cmd, char **envp);
 
 #endif

@@ -6,12 +6,11 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:04:20 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/04 11:25:14 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/05 17:34:45 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
-
 
 char	*get_envp(char *envp[])
 {
@@ -51,7 +50,7 @@ char	*find_command(char **split_paths, char *cmd)
 void	get_paths(t_pipex *pipex, char **envp)
 {
 	char	*env;
-	
+
 	env = get_envp(envp);
 	if (!env)
 	{
@@ -66,6 +65,15 @@ void	get_paths(t_pipex *pipex, char **envp)
 		perror("Error: Failed to get paths");
 		exit(1);
 	}
+}
+
+void	help_check(t_pipex *pipex)
+{
+	perror("command not found");
+	free_split(pipex->cmd1);
+	free_split(pipex->paths);
+	free_pipe(pipex);
+	exit(1);
 }
 
 char	*check_command(t_pipex *pipex, char **envp)
@@ -89,25 +97,6 @@ char	*check_command(t_pipex *pipex, char **envp)
 	else
 		cmd_path = find_command(pipex->paths, pipex->cmd1[0]);
 	if (!cmd_path)
-	{
-		perror("command not found");
-		free_split(pipex->cmd1);
-		free_split(pipex->paths);
-		free_pipe(pipex);
-		exit(1);
-	}
+		help_check(pipex);
 	return (cmd_path);
-}
-
-void	free_split(char **str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		free(str[i]);
-		i++;
-	}
-	free(str);
 }

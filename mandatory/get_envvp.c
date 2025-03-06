@@ -6,26 +6,11 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:04:20 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/04 08:48:54 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/05 17:14:46 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-char	*get_envp(char *envp[])
-{
-	int	i;
-
-	i = 0;
-	while (envp[i])
-	{
-		if (envp[i][0] == 'P' && envp[i][1] == 'A'
-			&& envp[i][2] == 'T' && envp[i][3] == 'H' && envp[i][4] == '=')
-			return (envp[i] + 5);
-		i++;
-	}
-	return (NULL);
-}
 
 char	*find_command(char **split_paths, char *cmd)
 {
@@ -59,11 +44,6 @@ void	help(t_pipex *pipex, char **paths)
 
 void	help_check_command(t_pipex *pipex, char **paths)
 {
-	if (!paths)
-	{
-		perror("Error: Failed to get paths");
-		exit(1);
-	}
 	if (!pipex->cmd1 || !pipex->cmd1[0])
 	{
 		perror("Error: Command not found\n");
@@ -91,21 +71,12 @@ void	help_check_command(t_pipex *pipex, char **paths)
 
 void	check_command(t_pipex *pipex, char **envp)
 {
-	char	*env;
-	char	**paths;
-
-	env = get_envp(envp);
-	if (!env)
-	{
-		perror("Error: No environment variables");
-		exit(1);
-	}
-	paths = ft_split(env, ':');
-	help_check_command(pipex, paths);
+	get_path(pipex, envp);
+	help_check_command(pipex, pipex->paths);
 	if (!pipex->cmd2 || !pipex->cmd2[0])
 	{
 		perror("Error: Command not found\n");
-		free_split(paths);
+		free_split(pipex->paths);
 		exit(1);
 	}
 	if (pipex->cmd2[0][0] == '.' || pipex->cmd2[0][0] == '/')
@@ -116,8 +87,8 @@ void	check_command(t_pipex *pipex, char **envp)
 			pipex->cmd2_path = NULL;
 	}
 	else
-		pipex->cmd2_path = find_command(paths, pipex->cmd2[0]);
+		pipex->cmd2_path = find_command(pipex->paths, pipex->cmd2[0]);
 	if (!pipex->cmd2_path)
-		help(pipex, paths);
-	free_split(paths);
+		help(pipex, pipex->paths);
+	free_split(pipex->paths);
 }

@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:04:07 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/01 10:56:47 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/05 17:03:00 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void	open_file(t_pipex *pipex, char *av[])
 		free_split(pipex->cmd1);
 		free_split(pipex->cmd2);
 		perror("Error opening file");
-		exit(1);		
+		exit(1);
 	}
 	if (pipe(pipex->pip) < 0)
 	{
