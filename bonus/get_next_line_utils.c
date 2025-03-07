@@ -6,11 +6,11 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/02 13:42:18 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/05 17:38:45 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/06 11:43:30 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "pipex_bonus.h"
 
 char	*ft_strncpy(char *dest, char const *src, unsigned int n)
 {

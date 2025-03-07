@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:04:20 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/05 17:34:45 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/06 12:37:55 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,8 @@ void	get_paths(t_pipex *pipex, char **envp)
 	if (!env)
 	{
 		perror("Error: No environment variables");
+		close(pipex->f1);
+		close(pipex->f2);
 		free_pipe(pipex);
 		exit(1);
 	}
@@ -62,6 +64,8 @@ void	get_paths(t_pipex *pipex, char **envp)
 	if (!pipex->paths)
 	{
 		free_pipe(pipex);
+		close(pipex->f1);
+		close(pipex->f2);
 		perror("Error: Failed to get paths");
 		exit(1);
 	}
@@ -69,14 +73,25 @@ void	get_paths(t_pipex *pipex, char **envp)
 
 void	help_check(t_pipex *pipex)
 {
+	int	i;
+
 	perror("command not found");
 	free_split(pipex->cmd1);
 	free_split(pipex->paths);
 	free_pipe(pipex);
+	close(pipex->f1);
+	close(pipex->f2);
+	i = 0;
+	while (i < pipex->count - 1)
+	{
+		close(pipex->pipes[i][0]);
+		close(pipex->pipes[i][1]);
+		i++;
+	}
 	exit(1);
 }
 
-char	*check_command(t_pipex *pipex, char **envp)
+char	*check_command(t_pipex *pipex)
 {
 	char	*cmd_path;
 

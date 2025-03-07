@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:16:12 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/05 23:55:58 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/06 12:13:12 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ void	handle_here_doc(char *limiter, t_pipex *pipex)
 	}
 	write(1, "here_doc> ", 10);
 	line = get_next_line(0);
-	limiter = ft_strjoin(limiter, "\n"); //free 
 	while (line)
 	{
 		if (!ft_strncmp(line, limiter, ft_strlen(limiter)) || !line)
@@ -54,8 +53,8 @@ void	open_files_here_doc(t_pipex *pipex, char *outfile)
 	pipex->pipes = malloc((pipex->count - 1) * sizeof(int *));
 	if (!pipex->pipes)
 	{
-		//check if u need to close.
 		perror("Pipe allocation failed");
+		close(pipex->f1);
 		exit(1);
 	}
 }
@@ -92,6 +91,7 @@ void	open_files(t_pipex *pipex, char *infile, char *outfile)
 	if (pipex->f2 < 0)
 	{
 		perror("Error opening output file");
+		close(pipex->f1);
 		exit(1);
 	}
 }

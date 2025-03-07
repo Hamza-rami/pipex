@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:51:11 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/05 18:19:16 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/06 12:16:47 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,4 +84,24 @@ void	child_process(t_pipex *pipex, int i, char *cmd_path, char **envp)
 		j++;
 	}
 	execute_command(cmd_path, pipex->cmd1, envp);
+}
+
+void	handle_file(t_pipex *pipex)
+{
+	int	i;
+
+	i = 0;
+	while (i < pipex->count)
+	{
+		wait(NULL);
+		i++;
+	}
+	close(pipex->f1);
+	close(pipex->f2);
+	if (pipex->cmd1)
+		free_split(pipex->cmd1);
+	if (pipex->cmd_paths)
+		free(pipex->cmd_paths);
+	free_split(pipex->paths);
+	free_pipe(pipex);
 }

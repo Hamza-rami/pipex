@@ -6,11 +6,11 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/02 13:42:15 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/05 17:38:25 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/06 11:44:21 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "pipex_bonus.h"
 
 static char	*hnadle_eof(char **buffer, char *tmp)
 {
@@ -24,7 +24,7 @@ static char	*hnadle_eof(char **buffer, char *tmp)
 	return (free(tmp), free(*buffer), *buffer = NULL, NULL);
 }
 
-static char	*ft_strjoin(char *s1, char *s2)
+static char	*ft_strrjoin(char *s1, char *s2)
 {
 	char	*result;
 	size_t	len1;
@@ -93,7 +93,7 @@ char	*get_next_line(int fd)
 		if (bytes_read < 0)
 			return (free(temp), NULL);
 		temp[bytes_read] = '\0';
-		buffer = ft_strjoin(buffer, temp);
+		buffer = ft_strrjoin(buffer, temp);
 		if (!buffer)
 			return (free(temp), NULL);
 		if (ft_strchr(buffer, '\n'))
