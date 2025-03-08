@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:10:35 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/06 12:06:20 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/08 03:15:56 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ typedef struct s_pipex
 	char	*cmd1_path;
 	char	*cmd2_path;
 	char	**paths;
+	int		check;
 }	t_pipex;
 
 char	**ft_split(char const *s, char c);
@@ -41,7 +42,7 @@ char	*find_command(char **split_paths, char *cmd);
 void	check_command(t_pipex *pipex, char **envp);
 void	free_split(char **str);
 char	*ft_strdup(char *src);
-void	open_file(t_pipex *pipex, char *av[]);
+void	creat_pip(t_pipex *pipex);
 void	get_path(t_pipex *pipex, char **envp);
 
 #endif

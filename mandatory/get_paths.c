@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:14:50 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/05 17:14:51 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/08 02:21:39 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,12 @@ void	get_path(t_pipex *pipex, char **envp)
 	if (!pipex->paths)
 	{
 		perror("Error: Failed to get paths");
+		if (pipex->cmd1_path)
+			free(pipex->cmd1_path);
+		if (pipex->cmd1)
+			free_split(pipex->cmd1);
+		if (pipex->cmd2)
+			free_split(pipex->cmd2);
 		exit(1);
 	}
 }

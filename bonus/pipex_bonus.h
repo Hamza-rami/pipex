@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:10:35 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/06 12:08:29 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/07 17:40:35 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ char	**ft_split(char const *s, char c);
 char	*ft_strjoin(char *s1, char *s2);
 char	*get_envp(char *envp[]);
 char	*find_command(char **split_paths, char *cmd);
-char	*check_command(t_pipex *pipex);
+char	*check_command(t_pipex *pipex, char **envp);
 void	get_paths(t_pipex *pipex, char **envp);
 void	free_split(char **str);
 char	*ft_strdup(char *src);

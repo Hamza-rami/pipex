@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:04:20 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/06 12:37:55 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/07 19:24:35 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,8 @@ void	help_check(t_pipex *pipex)
 
 	perror("command not found");
 	free_split(pipex->cmd1);
-	free_split(pipex->paths);
+	if (pipex->paths)
+		free_split(pipex->paths);
 	free_pipe(pipex);
 	close(pipex->f1);
 	close(pipex->f2);
@@ -91,14 +92,14 @@ void	help_check(t_pipex *pipex)
 	exit(1);
 }
 
-char	*check_command(t_pipex *pipex)
+char	*check_command(t_pipex *pipex, char **envp)
 {
 	char	*cmd_path;
 
+	cmd_path = NULL;
 	if (!pipex->cmd1 || !pipex->cmd1[0])
 	{
 		perror("Error: Command not found\n");
-		free_split(pipex->paths);
 		free_pipe(pipex);
 		exit(1);
 	}
@@ -106,11 +107,12 @@ char	*check_command(t_pipex *pipex)
 	{
 		if (access(pipex->cmd1[0], X_OK) == 0)
 			cmd_path = ft_strdup(pipex->cmd1[0]);
-		else
-			cmd_path = NULL;
 	}
 	else
+	{
+		get_paths(pipex, envp);
 		cmd_path = find_command(pipex->paths, pipex->cmd1[0]);
+	}
 	if (!cmd_path)
 		help_check(pipex);
 	return (cmd_path);

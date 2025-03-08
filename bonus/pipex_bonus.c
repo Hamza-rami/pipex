@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 12:58:10 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/06 12:34:16 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/07 18:06:13 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void	help(char **av, char **envp, t_pipex *pipex)
 				pipex->cmd1 = ft_split(av[i + 2], ' ');
 			if (pipex->cmd_paths)
 				free(pipex->cmd_paths);
-			pipex->cmd_paths = check_command(pipex);
+			pipex->cmd_paths = check_command(pipex, envp);
 			child_process(pipex, i, pipex->cmd_paths, envp);
 		}
 		i++;
@@ -108,10 +108,10 @@ int	main(int ac, char **av, char **envp)
 		hr_doc_help(ac, &pipex, av);
 	else
 		multiple_command(ac, &pipex, av);
-	get_paths(&pipex, envp);
 	create_pipes(&pipex);
 	pipex.cmd1 = NULL;
 	pipex.cmd_paths = NULL;
+	pipex.paths = NULL;
 	help(av, envp, &pipex);
 	i = 0;
 	while (i < pipex.count - 1)

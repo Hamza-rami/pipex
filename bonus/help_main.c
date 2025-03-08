@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:51:11 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/06 12:16:47 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/07 18:05:21 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,7 @@ void	handle_file(t_pipex *pipex)
 		free_split(pipex->cmd1);
 	if (pipex->cmd_paths)
 		free(pipex->cmd_paths);
-	free_split(pipex->paths);
+	if (pipex->paths)
+		free_split(pipex->paths);
 	free_pipe(pipex);
 }

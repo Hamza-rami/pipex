@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:04:07 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/05 17:03:00 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/08 03:15:50 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,30 +86,18 @@ char	*ft_strdup(char *src)
 	return (str);
 }
 
-void	open_file(t_pipex *pipex, char *av[])
+void	creat_pip(t_pipex *pipex)
 {
-	pipex->f1 = open(av[1], O_RDONLY);
-	if (pipex->f1 < 0)
-	{
-		free_split(pipex->cmd1);
-		free_split(pipex->cmd2);
-		perror("Error opening file");
-		exit(1);
-	}
-	pipex->f2 = open(av[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (pipex->f2 < 0)
-	{
-		close(pipex->f1);
-		free_split(pipex->cmd1);
-		free_split(pipex->cmd2);
-		perror("Error opening file");
-		exit(1);
-	}
 	if (pipe(pipex->pip) < 0)
 	{
-		free_split(pipex->cmd1);
-		free_split(pipex->cmd2);
-		perror("pipe error");
+		if (pipex->cmd1)
+			free_split(pipex->cmd1);
+		if (pipex->cmd2)
+			free_split(pipex->cmd2);
+		if (pipex->cmd1_path)
+			free(pipex->cmd1_path);
+		if (pipex->cmd1_path)
+			free(pipex->cmd1_path);
 		exit(1);
 	}
 }
