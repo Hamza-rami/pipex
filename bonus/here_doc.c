@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:16:12 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/06 12:13:12 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/09 02:07:38 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,19 +79,12 @@ void	execute_command(char *cmd_path, char **cmd, char **envp)
 	exit(1);
 }
 
-void	open_files(t_pipex *pipex, char *infile, char *outfile)
+void	open_outfile(t_pipex *pipex, char *outfile)
 {
-	pipex->f1 = open(infile, O_RDONLY);
-	if (pipex->f1 < 0)
-	{
-		perror("Error opening input file");
-		exit(1);
-	}
 	pipex->f2 = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (pipex->f2 < 0)
 	{
 		perror("Error opening output file");
-		close(pipex->f1);
 		exit(1);
 	}
 }

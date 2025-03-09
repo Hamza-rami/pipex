@@ -9,7 +9,7 @@ INC = mandatory/pipex.h
 INC_BNS = bonus/pipex_bonus.h
 OBJS = ${SRC:.c=.o}
 OBJS_BNS = ${SRC_BNS:.c=.o}
-CC = cc -Wall -Wextra -Werror 
+CC = cc -Wall -Wextra -Werror
 RM = rm -rf
 
 all: ${NAME}

@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:10:35 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/07 17:40:35 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/09 02:08:11 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,8 @@ void	handle_here_doc(char *limiter, t_pipex *pipex);
 void	open_files_here_doc(t_pipex *pipex, char *outfile);
 void	free_pipe(t_pipex *pipex);
 void	create_pipes(t_pipex *pipex);
-void	child_process(t_pipex *pipex, int i, char *cmd_path, char **envp);
-void	open_files(t_pipex *pipex, char *infile, char *outfile);
+void	child_process(t_pipex *pipex, int i, char **av, char **envp);
+void	open_outfile(t_pipex *pipex, char *outfile);
 void	execute_command(char *cmd_path, char **cmd, char **envp);
 void	handle_file(t_pipex *pipex);
 char	*ft_strncpy(char *dest, char const *src, unsigned int n);

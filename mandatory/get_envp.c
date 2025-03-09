@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:04:20 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/08 02:23:36 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/09 02:29:50 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,19 +62,11 @@ void	help_check_command(t_pipex *pipex, char **envp)
 
 void	check_command(t_pipex *pipex, char **envp)
 {
-	pipex->paths = NULL;
-	pipex->cmd1_path = NULL;
-	pipex->cmd2_path = NULL;
 	help_check_command(pipex, envp);
 	if (!pipex->cmd2 || !pipex->cmd2[0])
 	{
 		if (!pipex->cmd1_path)
-		{
-			if (pipex->cmd1)
-				free_split(pipex->cmd1);
-			perror("command not found\ncommand not found");
-			exit(1);
-		}
+			help(pipex);
 	}
 	else if (pipex->cmd2[0][0] == '.' || pipex->cmd2[0][0] == '/')
 	{
@@ -90,6 +82,4 @@ void	check_command(t_pipex *pipex, char **envp)
 	}
 	if (!pipex->cmd2_path && !pipex->cmd1_path)
 		help(pipex);
-	if (pipex->paths)
-		free_split(pipex->paths);
 }

@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 12:58:10 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/07 18:06:13 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/09 02:08:00 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,12 @@ void	multiple_command(int ac, t_pipex *pipex, char *av[])
 		exit(1);
 	}
 	pipex->here_doc = 0;
-	open_files(pipex, av[1], av[ac - 1]);
+	open_outfile(pipex, av[ac - 1]);
 	pipex->count = ac - 3;
 	pipex->pipes = malloc((pipex->count - 1) * sizeof(int *));
 	if (!pipex->pipes)
 	{
 		perror("Pipe allocation failed");
-		close(pipex->f1);
 		close(pipex->f2);
 		exit(1);
 	}
@@ -93,7 +92,7 @@ void	help(char **av, char **envp, t_pipex *pipex)
 			if (pipex->cmd_paths)
 				free(pipex->cmd_paths);
 			pipex->cmd_paths = check_command(pipex, envp);
-			child_process(pipex, i, pipex->cmd_paths, envp);
+			child_process(pipex, i, av, envp);
 		}
 		i++;
 	}

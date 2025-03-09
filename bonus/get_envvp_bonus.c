@@ -6,7 +6,7 @@
 /*   By: hrami <hrami@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 11:04:20 by hrami             #+#    #+#             */
-/*   Updated: 2025/03/07 19:24:35 by hrami            ###   ########.fr       */
+/*   Updated: 2025/03/09 02:16:08 by hrami            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,13 +75,9 @@ void	help_check(t_pipex *pipex)
 {
 	int	i;
 
-	perror("command not found");
-	free_split(pipex->cmd1);
+	perror("Error: Command not found\n");
 	if (pipex->paths)
 		free_split(pipex->paths);
-	free_pipe(pipex);
-	close(pipex->f1);
-	close(pipex->f2);
 	i = 0;
 	while (i < pipex->count - 1)
 	{
@@ -89,20 +85,22 @@ void	help_check(t_pipex *pipex)
 		close(pipex->pipes[i][1]);
 		i++;
 	}
+	if (pipex->cmd1)
+		free_split(pipex->cmd1);
+	free_pipe(pipex);
+	close(pipex->f2);
 	exit(1);
 }
 
 char	*check_command(t_pipex *pipex, char **envp)
 {
 	char	*cmd_path;
+	int		i;
 
+	i = 0;
 	cmd_path = NULL;
 	if (!pipex->cmd1 || !pipex->cmd1[0])
-	{
-		perror("Error: Command not found\n");
-		free_pipe(pipex);
-		exit(1);
-	}
+		help_check(pipex);
 	if (pipex->cmd1[0][0] == '.' || pipex->cmd1[0][0] == '/')
 	{
 		if (access(pipex->cmd1[0], X_OK) == 0)
@@ -115,5 +113,6 @@ char	*check_command(t_pipex *pipex, char **envp)
 	}
 	if (!cmd_path)
 		help_check(pipex);
+	free_split(pipex->paths);
 	return (cmd_path);
 }
